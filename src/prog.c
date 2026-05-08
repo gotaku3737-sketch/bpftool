@@ -1606,15 +1606,12 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
 						       &expected_attach_type);
 			if (err < 0) {
 				/* Put a '/' at the end of type to appease libbpf */
-				char *type = malloc(strlen(*argv) + 2);
+				char *type;
 
-				if (!type) {
+				if (asprintf(&type, "%s/", *argv) < 0) {
 					p_err("mem alloc failed");
 					goto err_free_reuse_maps;
 				}
-				*type = 0;
-				strcat(type, *argv);
-				strcat(type, "/");
 
 				err = get_prog_type_by_name(type, &common_prog_type,
 							    &expected_attach_type);
