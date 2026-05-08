@@ -276,13 +276,19 @@ $(BOOTSTRAP_OUTPUT)%.o: %.c $(LIBBPF_BOOTSTRAP_INTERNAL_HDRS) | $(BOOTSTRAP_OUTP
 $(OUTPUT)%.o: %.c
 	$(QUIET_CC)$(CC) $(CFLAGS) -c -MMD $< -o $@
 
+$(OUTPUT)jsonw_test: $(OUTPUT)jsonw_test.o $(OUTPUT)json_writer.o
+	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+
+test: $(OUTPUT)jsonw_test
+	$(QUIET_TEST)$(OUTPUT)jsonw_test
+
 feature-detect-clean:
 	$(call QUIET_CLEAN, feature-detect)
 	$(Q)$(MAKE) -C $(srctree)/tools/build/feature/ clean >/dev/null
 
 clean: $(LIBBPF)-clean $(LIBBPF_BOOTSTRAP)-clean
 	$(call QUIET_CLEAN, bpftool)
-	$(Q)$(RM) -- $(OUTPUT)bpftool $(OUTPUT)*.o $(OUTPUT)*.d
+	$(Q)$(RM) -- $(OUTPUT)bpftool $(OUTPUT)*.o $(OUTPUT)*.d $(OUTPUT)jsonw_test
 	$(Q)$(RM) -- $(OUTPUT)*.skel.h $(OUTPUT)vmlinux.h
 	$(Q)$(RM) -r -- $(LIBBPF_OUTPUT) $(BOOTSTRAP_OUTPUT)
 	$(call QUIET_CLEAN, core-gen)
