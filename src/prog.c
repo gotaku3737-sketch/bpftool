@@ -794,11 +794,11 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
 				if (ksyms) {
 					sym = kernel_syms_search(&dd, ksyms[i]);
 					if (sym)
-						sprintf(sym_name, "%s", sym->name);
+						snprintf(sym_name, sizeof(sym_name), "%s", sym->name);
 					else
-						sprintf(sym_name, "0x%016llx", ksyms[i]);
+						snprintf(sym_name, sizeof(sym_name), "0x%016llx", ksyms[i]);
 				} else {
-					strcpy(sym_name, "unknown");
+					snprintf(sym_name, sizeof(sym_name), "unknown");
 				}
 
 				if (func_info) {

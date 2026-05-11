@@ -81,11 +81,11 @@ static void get_obj_name(char *name, const char *file)
 	sanitize_identifier(name);
 }
 
-static void get_header_guard(char *guard, const char *obj_name, const char *suffix)
+static void get_header_guard(char *guard, size_t guard_sz, const char *obj_name, const char *suffix)
 {
 	int i;
 
-	sprintf(guard, "__%s_%s__", obj_name, suffix);
+	snprintf(guard, guard_sz, "__%s_%s__", obj_name, suffix);
 	for (i = 0; guard[i]; i++)
 		guard[i] = toupper(guard[i]);
 }
@@ -1311,7 +1311,7 @@ static int do_skeleton(int argc, char **argv)
 		prog_cnt++;
 	}
 
-	get_header_guard(header_guard, obj_name, "SKEL_H");
+	get_header_guard(header_guard, sizeof(header_guard), obj_name, "SKEL_H");
 	if (use_loader) {
 		codegen("\
 		\n\
@@ -1760,7 +1760,7 @@ static int do_subskeleton(int argc, char **argv)
 		}
 	}
 
-	get_header_guard(header_guard, obj_name, "SUBSKEL_H");
+	get_header_guard(header_guard, sizeof(header_guard), obj_name, "SUBSKEL_H");
 	codegen("\
 	\n\
 	/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */	    \n\
