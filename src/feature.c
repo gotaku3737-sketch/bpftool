@@ -504,10 +504,10 @@ probe_prog_type(enum bpf_prog_type prog_type, const char *prog_type_str,
 		return;
 	}
 
-	sprintf(feat_name, "have_%s_prog_type", prog_type_str);
-	sprintf(define_name, "%s_prog_type", prog_type_str);
+	snprintf(feat_name, sizeof(feat_name), "have_%s_prog_type", prog_type_str);
+	snprintf(define_name, sizeof(define_name), "%s_prog_type", prog_type_str);
 	uppercase(define_name, sizeof(define_name));
-	sprintf(plain_desc, "%s%s", plain_comment, prog_type_str);
+	snprintf(plain_desc, sizeof(plain_desc), "%s%s", plain_comment, prog_type_str);
 	print_bool_feature(feat_name, plain_desc, define_name, res,
 			   define_prefix);
 }
@@ -565,10 +565,10 @@ probe_map_type(enum bpf_map_type map_type, char const *map_type_str,
 		return;
 	}
 
-	sprintf(feat_name, "have_%s_map_type", map_type_str);
-	sprintf(define_name, "%s_map_type", map_type_str);
+	snprintf(feat_name, sizeof(feat_name), "have_%s_map_type", map_type_str);
+	snprintf(define_name, sizeof(define_name), "%s_map_type", map_type_str);
 	uppercase(define_name, sizeof(define_name));
-	sprintf(plain_desc, "%s%s", plain_comment, map_type_str);
+	snprintf(plain_desc, sizeof(plain_desc), "%s%s", plain_comment, map_type_str);
 	print_bool_feature(feat_name, plain_desc, define_name, res,
 			   define_prefix);
 }
@@ -658,7 +658,7 @@ probe_helpers_for_progtype(enum bpf_prog_type prog_type,
 		}
 
 	if (json_output) {
-		sprintf(feat_name, "%s_available_helpers", prog_type_str);
+		snprintf(feat_name, sizeof(feat_name), "%s_available_helpers", prog_type_str);
 		jsonw_name(json_wtr, feat_name);
 		jsonw_start_array(json_wtr);
 	} else if (!define_prefix) {

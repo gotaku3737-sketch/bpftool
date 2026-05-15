@@ -1,0 +1,4 @@
+## 2024-05-18 - [Defense in Depth] Bounded String Operations
+**Vulnerability:** Use of unbounded string operations like `sprintf`, `strcpy`, and `strcat`. These patterns were found extensively across core modules (`src/prog.c`, `src/gen.c`, `src/feature.c`, `src/tracelog.c`, `src/kernel/bpf/disasm.c`, `src/main.c`).
+**Learning:** Even in contexts where strings might be known to fit their buffers initially, future changes or unexpected input can lead to buffer overflows. The sheer number of unbounded functions indicated a systemic vulnerability pattern that needed a defense-in-depth approach.
+**Prevention:** Always use bounded equivalents: `snprintf` instead of `sprintf` or `strcpy`, and careful bounds checking for concatenations (`snprintf(dest + len, size - len, ...)` instead of `strcat`). This ensures that even if inputs change, the buffers will not overflow.

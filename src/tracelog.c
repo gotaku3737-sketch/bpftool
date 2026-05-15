@@ -50,7 +50,7 @@ find_tracefs_mnt_single(unsigned long magic, char *mnt, const char *mntpt)
 		return false;
 	}
 
-	strcpy(mnt, mntpt);
+	snprintf(mnt, PATH_MAX, "%s", mntpt);
 	return true;
 }
 
@@ -93,12 +93,12 @@ static bool get_tracefs_pipe(char *mnt)
 		return false;
 
 	p_info("could not find tracefs, attempting to mount it now");
-	strcpy(mnt, known_mnts[0]);
+	snprintf(mnt, PATH_MAX, "%s", known_mnts[0]);
 	if (mount_tracefs(mnt))
 		return false;
 
 exit_found:
-	strcat(mnt, pipe_name);
+	snprintf(mnt + strlen(mnt), PATH_MAX - strlen(mnt), "%s", pipe_name);
 	return true;
 }
 

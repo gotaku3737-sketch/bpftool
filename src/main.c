@@ -397,7 +397,7 @@ static int do_batch(int argc, char **argv)
 				goto err_close;
 			}
 			buf[strlen(buf) - 2] = '\0';
-			strcat(buf, contline);
+			snprintf(buf + strlen(buf), sizeof(buf) - strlen(buf), "%s", contline);
 		}
 
 		n_argc = make_args(buf, n_argv, BATCH_ARG_NB_MAX, lines);
