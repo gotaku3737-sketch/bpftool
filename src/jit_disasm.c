@@ -194,7 +194,7 @@ static int printf_json(void *out, const char *fmt, va_list ap)
 
 		/* Strip trailing spaces */
 		i = strlen(s) - 1;
-		while (s[i] == ' ')
+		while (i >= 0 && s[i] == ' ')
 			s[i--] = '\0';
 
 		jsonw_string_field(json_wtr, "operation", s);
