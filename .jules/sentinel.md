@@ -1,8 +1,4 @@
-## 2024-05-18 - [Defense in Depth] Bounded String Operations
-**Vulnerability:** Use of unbounded string operations like `sprintf`, `strcpy`, and `strcat`. These patterns were found extensively across core modules (`src/prog.c`, `src/gen.c`, `src/feature.c`, `src/tracelog.c`, `src/kernel/bpf/disasm.c`, `src/main.c`).
-**Learning:** Even in contexts where strings might be known to fit their buffers initially, future changes or unexpected input can lead to buffer overflows. The sheer number of unbounded functions indicated a systemic vulnerability pattern that needed a defense-in-depth approach.
-**Prevention:** Always use bounded equivalents: `snprintf` instead of `sprintf` or `strcpy`, and careful bounds checking for concatenations (`snprintf(dest + len, size - len, ...)` instead of `strcat`). This ensures that even if inputs change, the buffers will not overflow.
-## 2026-05-15 - [Sentinel Fix: Add length bounds to sscanf in xlated_dumper.c]
-**Vulnerability:** Found unbounded %s format specifiers in sscanf when parsing /proc/kallsyms in src/xlated_dumper.c.
-**Learning:** Legacy C code often forgets to bound %s in format string parsers like sscanf, leaving it open to buffer overflows when parsing even trusted files like /proc/kallsyms.
-**Prevention:** Always add explicit length limits like %255s that map to the actual size of the destination buffer when using family string formatting functions.
+## 2024-05-24 - Fix out-of-bounds array access in string stripping
+**Vulnerability:** A loop in `src/jit_disasm.c` responsible for stripping trailing spaces from a dynamically allocated string failed to check the index boundary. If the string was empty or contained only spaces, the loop index would reach `-1`, leading to an out-of-bounds read and write (`s[-1]`). This causes memory corruption and undefined behavior.
+**Learning:** Legacy string manipulation loops that decrement indices based solely on a character match condition are prone to underflow, especially when dealing with empty strings or strings matching only the condition.
+**Prevention:** Always verify that loop indices remain within valid bounds (e.g., `i >= 0`) when iterating backward through an array or string.
