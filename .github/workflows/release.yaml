@@ -30,7 +30,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0  # Fetch all tags
 
@@ -73,7 +73,7 @@ jobs:
           tar -xvf "${{ env.LLVM }}.tar.xz"
 
       - name: Checkout bpftool code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
           # Create a new directory to avoid wiping out LLVM on bpftool checkout
@@ -95,7 +95,7 @@ jobs:
           strip src/bpftool
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4.0.0
+        uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
         if: matrix.arch == 'arm64'
         with:
           platforms: arm64
@@ -161,7 +161,7 @@ jobs:
           sha256sum "${archive_arm64}" > "${archive_arm64}.sha256sum"
 
       - name: Checkout bpftool and libbpf code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
           path: 'bpftool'
@@ -175,7 +175,7 @@ jobs:
           base-repo: bpftool
 
       - name: Create draft release and add artifacts
-        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
+        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
         with:
           draft: true
           files: bpftool*
