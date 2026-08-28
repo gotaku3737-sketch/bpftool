@@ -130,13 +130,16 @@ static void __printf(2, 3)
 print_insn_json(void *private_data, const char *fmt, ...)
 {
 	unsigned int l = strlen(fmt);
-	char chomped_fmt[l];
+	/* Security: Prevent 0-length VLA which leaves format string uninitialized */
+	char chomped_fmt[l > 0 ? l : 1];
 	va_list args;
 
 	va_start(args, fmt);
 	if (l > 0) {
 		strncpy(chomped_fmt, fmt, l - 1);
 		chomped_fmt[l - 1] = '\0';
+	} else {
+		chomped_fmt[0] = '\0';
 	}
 	jsonw_vprintf_enquote(json_wtr, chomped_fmt, args);
 	va_end(args);
