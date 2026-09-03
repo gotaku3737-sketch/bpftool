@@ -227,7 +227,7 @@ BPFTOOL_BOOTSTRAP := $(BOOTSTRAP_OUTPUT)bpftool
 BOOTSTRAP_OBJS = $(addprefix $(BOOTSTRAP_OUTPUT),main.o common.o json_writer.o gen.o btf.o $(if $(CRYPTO_LIBS),sign.o))
 $(BOOTSTRAP_OBJS): $(LIBBPF_BOOTSTRAP)
 
-OBJS = $(patsubst %.c,$(OUTPUT)%.o,$(SRCS)) $(OUTPUT)disasm.o
+OBJS = $(patsubst %.c,$(OUTPUT)%.o,$(filter-out jsonw_test.c,$(SRCS))) $(OUTPUT)disasm.o
 $(OBJS): $(LIBBPF) $(LIBBPF_INTERNAL_HDRS)
 
 VMLINUX_BTF_PATHS ?= $(if $(O),$(O)/vmlinux)				\
@@ -294,7 +294,7 @@ $(OUTPUT)jsonw_test: $(OUTPUT)jsonw_test.o $(OUTPUT)json_writer.o
 	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
 
 test: $(OUTPUT)jsonw_test
-	$(QUIET_TEST)$(OUTPUT)jsonw_test
+	$(QUIET_TEST)./$(OUTPUT)jsonw_test
 
 feature-detect-clean:
 	$(call QUIET_CLEAN, feature-detect)
