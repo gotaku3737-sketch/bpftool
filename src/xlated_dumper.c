@@ -98,7 +98,8 @@ static void __printf(2, 3) print_insn(void *private_data, const char *fmt, ...)
 static void __printf(2, 3)
 print_insn_for_graph(void *private_data, const char *fmt, ...)
 {
-	char buf[64], *p;
+	char buf[256], *p;
+	size_t len;
 	va_list args;
 
 	va_start(args, fmt);
@@ -108,14 +109,24 @@ print_insn_for_graph(void *private_data, const char *fmt, ...)
 	p = buf;
 	while (*p != '\0') {
 		if (*p == '\n') {
-			memmove(p + 3, p, strlen(buf) + 1 - (p - buf));
+			len = strlen(p);
+			if ((p - buf) + len + 3 >= sizeof(buf)) {
+				*p = '\0';
+				break;
+			}
+			memmove(p + 3, p, len + 1);
 			/* Align each instruction dump row left. */
 			*p++ = '\\';
 			*p++ = 'l';
 			/* Output multiline concatenation. */
 			*p++ = '\\';
 		} else if (*p == '<' || *p == '>' || *p == '|' || *p == '&') {
-			memmove(p + 1, p, strlen(buf) + 1 - (p - buf));
+			len = strlen(p);
+			if ((p - buf) + len + 1 >= sizeof(buf)) {
+				*p = '\0';
+				break;
+			}
+			memmove(p + 1, p, len + 1);
 			/* Escape special character. */
 			*p++ = '\\';
 		}
