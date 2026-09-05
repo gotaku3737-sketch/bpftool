@@ -239,6 +239,7 @@ int detect_common_prefix(const char *arg, ...)
 	unsigned int count = 0;
 	const char *ref;
 	char msg[256];
+	size_t len;
 	va_list ap;
 
 	snprintf(msg, sizeof(msg), "ambiguous prefix: '%s' could be '", arg);
@@ -247,12 +248,16 @@ int detect_common_prefix(const char *arg, ...)
 		if (!is_prefix(arg, ref))
 			continue;
 		count++;
-		if (count > 1)
-			strncat(msg, "' or '", sizeof(msg) - strlen(msg) - 1);
-		strncat(msg, ref, sizeof(msg) - strlen(msg) - 1);
+		if (count > 1) {
+			len = strlen(msg);
+			strncat(msg, "' or '", len < sizeof(msg) ? sizeof(msg) - len - 1 : 0);
+		}
+		len = strlen(msg);
+		strncat(msg, ref, len < sizeof(msg) ? sizeof(msg) - len - 1 : 0);
 	}
 	va_end(ap);
-	strncat(msg, "'", sizeof(msg) - strlen(msg) - 1);
+	len = strlen(msg);
+	strncat(msg, "'", len < sizeof(msg) ? sizeof(msg) - len - 1 : 0);
 
 	if (count >= 2) {
 		p_err("%s", msg);
