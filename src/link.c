@@ -503,6 +503,7 @@ static char *perf_config_hw_cache_str(__u64 config)
 {
 	const char *hw_cache, *result, *op;
 	char *str = malloc(PERF_HW_CACHE_LEN);
+	size_t len;
 
 	if (!str) {
 		p_err("mem alloc failed");
@@ -516,19 +517,21 @@ static char *perf_config_hw_cache_str(__u64 config)
 		snprintf(str, PERF_HW_CACHE_LEN, "%llu-", config & 0xff);
 
 	op = perf_event_name(evsel__hw_cache_op, (config >> 8) & 0xff);
+	len = strlen(str);
 	if (op)
-		snprintf(str + strlen(str), PERF_HW_CACHE_LEN - strlen(str),
+		snprintf(str + len, len < PERF_HW_CACHE_LEN ? PERF_HW_CACHE_LEN - len : 0,
 			 "%s-", op);
 	else
-		snprintf(str + strlen(str), PERF_HW_CACHE_LEN - strlen(str),
+		snprintf(str + len, len < PERF_HW_CACHE_LEN ? PERF_HW_CACHE_LEN - len : 0,
 			 "%llu-", (config >> 8) & 0xff);
 
 	result = perf_event_name(evsel__hw_cache_result, config >> 16);
+	len = strlen(str);
 	if (result)
-		snprintf(str + strlen(str), PERF_HW_CACHE_LEN - strlen(str),
+		snprintf(str + len, len < PERF_HW_CACHE_LEN ? PERF_HW_CACHE_LEN - len : 0,
 			 "%s", result);
 	else
-		snprintf(str + strlen(str), PERF_HW_CACHE_LEN - strlen(str),
+		snprintf(str + len, len < PERF_HW_CACHE_LEN ? PERF_HW_CACHE_LEN - len : 0,
 			 "%llu", config >> 16);
 	return str;
 }
