@@ -98,7 +98,11 @@ static bool get_tracefs_pipe(char *mnt)
 		return false;
 
 exit_found:
-	snprintf(mnt + strlen(mnt), PATH_MAX - strlen(mnt), "%s", pipe_name);
+	; /* ISO C requires a statement after a label */
+	{
+		size_t len = strlen(mnt);
+		snprintf(mnt + len, len < PATH_MAX ? PATH_MAX - len : 0, "%s", pipe_name);
+	}
 	return true;
 }
 

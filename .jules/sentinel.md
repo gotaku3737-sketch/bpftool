@@ -2,3 +2,7 @@
 **Vulnerability:** A theoretical `size_t` underflow in `strncat(msg, ref, sizeof(msg) - strlen(msg) - 1)` could lead to a stack buffer overflow. Although `snprintf` guarantees null-termination, making this unlikely to occur under normal execution, resolving it is a good defensive programming practice to prevent unexpected boundary vulnerabilities.
 **Learning:** Using `sizeof(buf) - strlen(buf) - 1` without ensuring that `strlen(buf) < sizeof(buf)` can result in a massive positive integer due to `size_t` being unsigned.
 **Prevention:** Guard size calculations for string concatenation using a ternary check like `len < sizeof(msg) ? sizeof(msg) - len - 1 : 0`, and ensure variables referencing length are updated between sequential operations.
+## 2026-09-09 - [Fix snprintf size_t underflow]
+**Vulnerability:** A theoretical size_t underflow could occur in snprintf when calculating the remaining buffer size as (MAX_LEN - strlen(buf)). If strlen(buf) >= MAX_LEN, the result is a huge positive number due to unsigned arithmetic wrapping, passing a massive size to snprintf and potentially causing a stack buffer overflow.
+**Learning:** Subtractions on size_t types without bounds-checking prior to the operation can introduce subtle but critical buffer overflow vulnerabilities, especially when interacting with string formatting APIs.
+**Prevention:** When determining the remaining space in a fixed-size buffer, always ensure the current length is strictly less than the maximum capacity, preferably using a ternary operator (len < MAX ? MAX - len : 0).
