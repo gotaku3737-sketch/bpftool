@@ -402,7 +402,14 @@ static int do_batch(int argc, char **argv)
 				goto err_close;
 			}
 			buf[strlen(buf) - 2] = '\0';
-			snprintf(buf + strlen(buf), sizeof(buf) - strlen(buf), "%s", contline);
+			{
+				size_t len = strlen(buf);
+				/*
+				 * Sentinel: Guard against size_t underflow in remaining
+				 * buffer space calculation for snprintf.
+				 */
+				snprintf(buf + len, len < sizeof(buf) ? sizeof(buf) - len : 0, "%s", contline);
+			}
 		}
 
 		n_argc = make_args(buf, n_argv, BATCH_ARG_NB_MAX, lines);
