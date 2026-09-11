@@ -10,3 +10,7 @@
 **Vulnerability:** A theoretical size_t underflow could occur in snprintf when calculating the remaining buffer size as (sizeof(buf) - strlen(buf)). If strlen(buf) >= sizeof(buf), the result is a huge positive number due to unsigned arithmetic wrapping, passing a massive size to snprintf and potentially causing a stack buffer overflow.
 **Learning:** Subtractions on size_t types without bounds-checking prior to the operation can introduce subtle but critical buffer overflow vulnerabilities, especially when interacting with string formatting APIs like snprintf.
 **Prevention:** When determining the remaining space in a fixed-size buffer, always ensure the current length is strictly less than the maximum capacity, preferably using a ternary operator (len < MAX ? MAX - len : 0).
+## 2024-05-24 - [size_t underflows in snprintf]
+**Vulnerability:** Potential buffer overflow due to `size_t` underflows in `snprintf` remaining buffer space calculation (`size - pos`). If `pos` is larger than `size`, the result becomes a huge positive number.
+**Learning:** `snprintf` expects a `size_t` for the buffer size. Always guard subtractions that calculate remaining buffer capacity, e.g., `pos < size ? size - pos : 0`, and ensure pointer arithmetic doesn't go out of bounds `buf + (pos < size ? pos : 0)`.
+**Prevention:** Audit all `snprintf` usages specifically for expressions like `sizeof(buf) - len` or `size - pos` and replace them with clamped bounds checks.
