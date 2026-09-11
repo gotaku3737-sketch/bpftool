@@ -84,16 +84,17 @@ static int dump_prog_id_as_func_ptr(const struct btf_dumper *d,
 	prog_name = btf__name_by_offset(prog_btf, func_type->name_off);
 
 print:
+	/* Sentinel: Guard against size_t underflow in remaining buffer space calculation for snprintf. */
 	if (!prog_id)
-		snprintf(&prog_str[func_sig_len],
-			 sizeof(prog_str) - func_sig_len, " 0");
+		snprintf(&prog_str[(size_t)func_sig_len < sizeof(prog_str) ? func_sig_len : 0],
+			 (size_t)func_sig_len < sizeof(prog_str) ? sizeof(prog_str) - func_sig_len : 0, " 0");
 	else if (prog_name)
-		snprintf(&prog_str[func_sig_len],
-			 sizeof(prog_str) - func_sig_len,
+		snprintf(&prog_str[(size_t)func_sig_len < sizeof(prog_str) ? func_sig_len : 0],
+			 (size_t)func_sig_len < sizeof(prog_str) ? sizeof(prog_str) - func_sig_len : 0,
 			 " %s/prog_id:%u", prog_name, prog_id);
 	else
-		snprintf(&prog_str[func_sig_len],
-			 sizeof(prog_str) - func_sig_len,
+		snprintf(&prog_str[(size_t)func_sig_len < sizeof(prog_str) ? func_sig_len : 0],
+			 (size_t)func_sig_len < sizeof(prog_str) ? sizeof(prog_str) - func_sig_len : 0,
 			 " <unknown_prog_name>/prog_id:%u", prog_id);
 
 	prog_str[sizeof(prog_str) - 1] = '\0';
@@ -601,9 +602,11 @@ int btf_dumper_type(const struct btf_dumper *d, __u32 type_id,
 	return btf_dumper_do_type(d, type_id, 0, data);
 }
 
+/* Sentinel: Guard against size_t underflow in remaining buffer space calculation for snprintf. */
 #define BTF_PRINT_ARG(...)						\
 	do {								\
-		pos += snprintf(func_sig + pos, size - pos,		\
+		pos += snprintf(func_sig + (pos < size ? pos : 0),	\
+				pos < size ? size - pos : 0,		\
 				__VA_ARGS__);				\
 		if (pos >= size)					\
 			return -1;					\
