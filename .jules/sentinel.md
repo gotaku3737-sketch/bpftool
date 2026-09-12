@@ -14,3 +14,7 @@
 **Vulnerability:** Potential buffer overflow due to `size_t` underflows in `snprintf` remaining buffer space calculation (`size - pos`). If `pos` is larger than `size`, the result becomes a huge positive number.
 **Learning:** `snprintf` expects a `size_t` for the buffer size. Always guard subtractions that calculate remaining buffer capacity, e.g., `pos < size ? size - pos : 0`, and ensure pointer arithmetic doesn't go out of bounds `buf + (pos < size ? pos : 0)`.
 **Prevention:** Audit all `snprintf` usages specifically for expressions like `sizeof(buf) - len` or `size - pos` and replace them with clamped bounds checks.
+## 2026-09-15 - [Fix improper strncat usage in code generation]
+**Vulnerability:** The code used `var_ident[0] = '\0'; strncat(var_ident, var_name, sizeof(var_ident) - 1);` as a string copy pattern. While functionally safe because length was 0, using strncat for copying is an anti-pattern that can lead to subtle bugs or buffer overflows if the buffer isn't properly null-initialized or its previous length is misunderstood.
+**Learning:** Misusing `strncat` as `strncpy` can be confusing and technically fragile depending on memory initialization. It's best to use intended functions for clarity and standard safety.
+**Prevention:** Use `strncpy` coupled with manual null-termination `buf[sizeof(buf) - 1] = '\0'` for fixed-size buffer copying, rather than zeroing the first byte and appending.
