@@ -216,8 +216,8 @@ static int codegen_datasec_def(struct bpf_object *obj,
 		 * a function, it's name is '<function name>.<variable name>',
 		 * which we'll turn into a '<function name>_<variable name>'
 		 */
-		var_ident[0] = '\0';
-		strncat(var_ident, var_name, sizeof(var_ident) - 1);
+		strncpy(var_ident, var_name, sizeof(var_ident) - 1);
+		var_ident[sizeof(var_ident) - 1] = '\0';
 		sanitize_identifier(var_ident);
 
 		printf("\t\t");
@@ -542,8 +542,8 @@ static void codegen_asserts(struct bpf_object *obj, const char *obj_name)
 			if (var_size < 0)
 				continue;
 
-			var_ident[0] = '\0';
-			strncat(var_ident, var_name, sizeof(var_ident) - 1);
+			strncpy(var_ident, var_name, sizeof(var_ident) - 1);
+			var_ident[sizeof(var_ident) - 1] = '\0';
 			sanitize_identifier(var_ident);
 
 			printf("\t_Static_assert(sizeof(s->%s->%s) == %ld, \"unexpected size of '%s'\");\n",
