@@ -77,7 +77,7 @@ static bool get_tracefs_pipe(char *mnt)
 
 	/* Allow room for NULL terminating byte and pipe file name */
 	snprintf(format, sizeof(format), "%%*s %%%zus %%99s %%*s %%*d %%*d\\n",
-		 PATH_MAX - strlen(pipe_name) - 1);
+		 strlen(pipe_name) < PATH_MAX ? PATH_MAX - strlen(pipe_name) - 1 : 0);
 	while (fscanf(fp, format, mnt, type) == 2)
 		if (strcmp(type, fstype) == 0) {
 			found = true;

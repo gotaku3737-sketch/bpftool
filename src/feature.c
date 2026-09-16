@@ -498,7 +498,7 @@ probe_prog_type(enum bpf_prog_type prog_type, const char *prog_type_str,
 
 	supported_types[prog_type] |= res;
 
-	maxlen = sizeof(plain_desc) - strlen(plain_comment) - 1;
+	maxlen = strlen(plain_comment) < sizeof(plain_desc) ? sizeof(plain_desc) - strlen(plain_comment) - 1 : 0;
 	if (strlen(prog_type_str) > maxlen) {
 		p_info("program type name too long");
 		return;
@@ -559,7 +559,7 @@ probe_map_type(enum bpf_map_type map_type, char const *map_type_str,
 	 * check required for unprivileged users
 	 */
 
-	maxlen = sizeof(plain_desc) - strlen(plain_comment) - 1;
+	maxlen = strlen(plain_comment) < sizeof(plain_desc) ? sizeof(plain_desc) - strlen(plain_comment) - 1 : 0;
 	if (strlen(map_type_str) > maxlen) {
 		p_info("map type name too long");
 		return;
