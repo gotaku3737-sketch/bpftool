@@ -18,3 +18,7 @@
 **Vulnerability:** The code used `var_ident[0] = '\0'; strncat(var_ident, var_name, sizeof(var_ident) - 1);` as a string copy pattern. While functionally safe because length was 0, using strncat for copying is an anti-pattern that can lead to subtle bugs or buffer overflows if the buffer isn't properly null-initialized or its previous length is misunderstood.
 **Learning:** Misusing `strncat` as `strncpy` can be confusing and technically fragile depending on memory initialization. It's best to use intended functions for clarity and standard safety.
 **Prevention:** Use `strncpy` coupled with manual null-termination `buf[sizeof(buf) - 1] = '\0'` for fixed-size buffer copying, rather than zeroing the first byte and appending.
+## 2026-09-17 - [Fix length calculation size_t underflow in tracelog and feature]
+**Vulnerability:** A theoretical `size_t` underflow in `PATH_MAX - strlen(pipe_name) - 1` or `sizeof(plain_desc) - strlen(plain_comment) - 1` could lead to buffer overflows if the string lengths are unexpectedly larger than the buffer size limits. Because `size_t` is unsigned, an underflow wraps around to a massive positive value.
+**Learning:** Subtractions on size limits utilizing string lengths (like `strlen`) can underflow.
+**Prevention:** Guard size calculations for bounds limiting logic using a ternary check like `strlen(str) < MAX ? MAX - strlen(str) - 1 : 0`, ensuring variables referencing length are validated against the bounds.
