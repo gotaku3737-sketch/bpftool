@@ -22,3 +22,7 @@
 **Vulnerability:** A theoretical `size_t` underflow in `PATH_MAX - strlen(pipe_name) - 1` or `sizeof(plain_desc) - strlen(plain_comment) - 1` could lead to buffer overflows if the string lengths are unexpectedly larger than the buffer size limits. Because `size_t` is unsigned, an underflow wraps around to a massive positive value.
 **Learning:** Subtractions on size limits utilizing string lengths (like `strlen`) can underflow.
 **Prevention:** Guard size calculations for bounds limiting logic using a ternary check like `strlen(str) < MAX ? MAX - strlen(str) - 1 : 0`, ensuring variables referencing length are validated against the bounds.
+## 2024-05-25 - [Integer overflow in buffer growth size calculation]
+**Vulnerability:** Exact equality bounds checks before exponentially growing a buffer size (e.g., `if (buf_size == UINT32_MAX)`) are unsafe. If `buf_size` is multiplied by 2 and exceeds `UINT32_MAX`, it can trigger integer overflow due to type limits or size conversions, bypassing the check entirely in future iterations. In functions passing sizes to `realloc`, this might wrap around to a small size or 0, leading to a double free or small buffer allocation followed by a heap buffer overflow.
+**Learning:** Exact equality checks against max constants are ineffective when values grow exponentially. Buffer growth must cap at the maximum safe limit explicitly before the multiplication.
+**Prevention:** Use `>=` combined with clamping to safely grow sizes: `if (buf_size >= MAX / 2) buf_size = MAX; else buf_size *= 2;`.

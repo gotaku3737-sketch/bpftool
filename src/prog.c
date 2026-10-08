@@ -1216,7 +1216,10 @@ static int get_run_data(const char *fname, void **data_ptr, unsigned int *size)
 				goto err_free;
 			}
 			/* No space for fread()-ing next chunk; realloc() */
-			buf_size *= 2;
+			if (buf_size >= UINT32_MAX / 2)
+				buf_size = UINT32_MAX;
+			else
+				buf_size *= 2;
 			tmp = realloc(*data_ptr, buf_size);
 			if (!tmp) {
 				p_err("failed to reallocate data_in/ctx_in: %s",
