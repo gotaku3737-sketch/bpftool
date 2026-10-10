@@ -1210,7 +1210,8 @@ static int get_run_data(const char *fname, void **data_ptr, unsigned int *size)
 			goto err_free;
 		}
 		if (nb_read > buf_size - block_size) {
-			if (buf_size == UINT32_MAX) {
+			/* Sentinel: Avoid exact equality bounds check to prevent bypassing size limit and potential double-free */
+			if (buf_size >= UINT32_MAX) {
 				p_err("data_in/ctx_in is too long (max: %u)",
 				      UINT32_MAX);
 				goto err_free;
